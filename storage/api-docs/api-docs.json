@@ -1,0 +1,612 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "LTI Application API",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "summary": "LTI Login",
+                "description": "LTI Login Here",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "username",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "username":{
+                                        "type":"string"
+                                    },
+                                    "password": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                    "type":"object",
+                                    "properties":{
+                                        "username":{
+                                            "type":"string"
+                                        },
+                                        "password":{
+                                            "type": "string"
+                                        }
+                                    },
+                                "example": {
+                                        "username": "JhonDev",
+                                        "password": "test@123"
+									}
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Login Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5N2U3ZDg5NC1jNjE1LTRlMjAtYmE4Yy01YTdiZjJhOWYwNTciLCJqdGkiOiIzMjdmYWM2N2Y0ZmIwYjg3ZTRiMDcyYmQ1NzViZjQzYzMyODA4ZjY1NjVmNTYxODIxMjM0NzFiZjVlNzBhYmQzNDAzNWI2NGNiMmY4OTgwZSIsImlhdCI6MTY3MDMzOTY4Ny4yNjY3NjUsIm5iZiI6MTY3MDMzOTY4Ny4yNjY3NzQsImV4cCI6MTY4NjA2NDQ4Ny4xNjgyNzYsInN1YiI6IjEiLCJzY29wZXMiOltdfQ.ZJeXE3MizFYVcGgzogHB4GKOljRwC_UGFbQhaM_btS98kyEjYstTx0ZpX0BFXpg2EqhRZK6S2SCK4DRkTWssH-ZvFP"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Login Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiI5N2U3ZDg5NC1jNjE1LTRlMjAtYmE4Yy01YTdiZjJhOWYwNTciLCJqdGkiOiIzMjdmYWM2N2Y0ZmIwYjg3ZTRiMDcyYmQ1NzViZjQzYzMyODA4ZjY1NjVmNTYxODIxMjM0NzFiZjVlNzBhYmQzNDAzNWI2NGNiMmY4OTgwZSIsImlhdCI6MTY3MDMzOTY4Ny4yNjY3NjUsIm5iZiI6MTY3MDMzOTY4Ny4yNjY3NzQsImV4cCI6MTY4NjA2NDQ4Ny4xNjgyNzYsInN1YiI6IjEiLCJzY29wZXMiOltdfQ.ZJeXE3MizFYVcGgzogHB4GKOljRwC_UGFbQhaM_btS98kyEjYstTx0ZpX0BFXpg2EqhRZK6S2SCK4DRkTWssH-ZvFP"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "error": "Username or Password not matching"
+                                        }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                    
+                }
+            }
+        },
+        "/api/forgot-password": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "summary": "Forgot Password",
+                "description": "Forgot Password",
+                "operationId": "forgotPassword",
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email":{
+                                        "type":"string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "application/json": {
+                            "schema": {
+                                    "type":"object",
+                                    "properties":{
+                                        "email":{
+                                            "type":"string"
+                                        }
+                                    },
+                                "example": {
+                                        "email": "test@test.com"
+									}
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Successfully sent email",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": 
+                                        "We have e-mailed your password reset link!"
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Successfully sent email",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": 
+                                    "We have e-mailed your password reset link!"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "error": "Entered email is not found!"
+                                        }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                    
+                }
+            }
+        },
+        "/api/add-client": {
+            "post": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Add Client",
+                "description": "Add Client Here",
+                "operationId": "addClient",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "client_id",
+                                    "name",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "client_id":{
+                                        "type":"string"
+                                    },
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "example": [
+                                    {
+                                        "client_id": "Client1",
+                                        "name": "Client 1 {name}",
+                                        "description": "Client 1 {description}"
+                                    },
+                                    {
+                                        "client_id": "Client2",
+                                        "name": "Client 2 {Name}",
+                                        "description": "Client 2 {Description}"
+                                    }
+                            ],
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Inserted Client Records Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "Success": "Successfully inserted the data.",
+                                        "total_count": 2,
+                                        "total_insert": 2,
+                                        "total_failed": 0,
+                                        "failed_client": {
+                                        "client_id": [],
+                                        "errorMessage": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Inserted Client Records Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "Success": "Successfully inserted the data.",
+                                        "total_count": 2,
+                                        "total_insert": 2,
+                                        "total_failed": 0,
+                                        "failed_client": {
+                                        "client_id": [],
+                                        "errorMessage": ""
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+        "/api/edit-client/{id}": {
+            "patch": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Edit Client",
+                "description": "Edit Client Here",
+                "operationId": "editClient",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID To Update Client For",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "description"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object",
+                                "example":{
+                                    "name":"Client 1 {name}",
+                                    "description":"Client 1 {description}"
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Updated Client Records Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "Success": "Successfully updated the data.",
+                                        "clientData": [
+                                            {
+                                            "client_id": "Client1",
+                                            "name": "Client 1 {name}",
+                                            "description": "Client 1 {description}"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Updated Client Records Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "Success": "Successfully updated the data.",
+                                        "clientData": [
+                                            {
+                                            "client_id": "Client1",
+                                            "name": "Client 1 {name}",
+                                            "description": "Client 1 {description}"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+        "/api/client/{id}": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Show Client",
+                "description": "Show Client Here",
+                "operationId": "showClient",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID To Show Client For",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "Success": "Successfully fetched the data.",
+                                        "clientData": [
+                                          {
+                                            "client_id": "Client1",
+                                            "name": "LearningMate",
+                                            "description": "LearningMate"
+                                          }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "Success": "Successfully fetched the data.",
+                                        "clientData": [
+                                          {
+                                            "client_id": "Client1",
+                                            "name": "LearningMate",
+                                            "description": "LearningMate Solution"
+                                           }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+        "/api/delete-client/{id}": {
+            "delete": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Delete Client",
+                "description": "Delete Client Here",
+                "operationId": "deleteClient",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID To Delete Client For",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Deleted Client Records Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "Success": "Successfully deleted the data.",
+                                        "total_count": 4,
+                                        "total_delete": 1,
+                                        "total_failed": 1,
+                                        "total_not_found": 2,
+                                        "failed_client": {
+                                            "client_id": [
+                                            "Client2"
+                                            ],
+                                            "errorMessage": "These client are inactivated or deleted"
+                                        },
+                                        "not_found_client": {
+                                            "client_id": [
+                                            "Client3",
+                                            "Client4"
+                                            ],
+                                            "errorMessage": "These client id's record not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Deleted Client Records Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "Success": "Successfully deleted the data.",
+                                        "total_count": 4,
+                                        "total_delete": 1,
+                                        "total_failed": 1,
+                                        "total_not_found": 2,
+                                        "failed_client": {
+                                            "client_id": [
+                                            "Client2"
+                                            ],
+                                            "errorMessage": "These client are inactivated or deleted"
+                                        },
+                                        "not_found_client": {
+                                            "client_id": [
+                                            "Client3",
+                                            "Client4"
+                                            ],
+                                            "errorMessage": "These client id's record not found"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        } 
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": { 
+                "type": "apiKey",
+                "description": "<strong>Enter token in format (Bearer <your-token>)</strong>",
+                "in": "header",
+                "name":"Authorization"
+            }
+        }
+    }
+}

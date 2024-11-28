@@ -1,0 +1,674 @@
+ "/api/asset-list": {
+            "get": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Show Asset List",
+                "description": "Show Asset List",
+                "operationId": "assetList",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                           
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+        "/api/client-list": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Client List",
+                "description": "Client List",
+                "operationId": "clientList",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                           
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                       }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+        "/api/product-list": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Show Product List",
+                "description": "Show Product List",
+                "operationId": "productList",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                           
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+
+
+
+
+        // edit Assets
+
+        {
+                        "in": "body",
+                      "name": "body",
+                      "description": "List of asset object",
+                      "required": true,
+                      "schema": {
+                        "type":"object",
+                        "properties":{
+                            "title":{
+                                "type": "string"
+                            },
+                            "description":{
+                                "type": "text"
+                            },
+                            "isbn10":{
+                                "type": "charecter"
+                            },
+                            "isbn13":{
+                                "type": "charecter"
+                            },
+                            "thumbnail_location":{
+                                "type": "string"
+                            },
+                            "link_location":{
+                                "type": "string"
+                            },
+                            "parent_id":{
+                                "type": "integer"
+                            },
+                            "product_id":{
+                                "type": "integer"
+                            },
+                            "content_type":{
+                                "type": "string"
+                            }
+                        },
+                        "example": {
+                            "title": "Books",
+                            "description": "Botany for higher studyies",
+                            "isbn10": 10,
+                            "isbn13": 10,
+                            "thumbnail_location": "Books/Books",
+                            "link_location": "www.google.com",
+                            "parent_id": 1,
+                            "product_id": 1,
+                            "content_type": "text"
+                        }
+                      }
+                    },
+
+
+
+                    "/api/trashed-asset-list": {
+            "get": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Show Trashed Asset List",
+                "description": "Show Trashed Asset List",
+                "operationId": "trashedAssetList",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                           
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+
+
+
+        "/api/restore-asset/{id}": {
+            "get": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Restore Asset",
+                "description": "Restored Asset Records Successfully",
+                "operationId": "restoreAsset",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID To Restore Asset for",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                           
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                       }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+
+
+        "/api/trashed-client-list": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Show Trashed Client List",
+                "description": "Show Trashed Client List",
+                "operationId": "trashedClientList",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                           
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+
+         "/api/restore-client/{id}": {
+            "get": {
+                "tags": [
+                    "Clients"
+                ],
+                "summary": "Restore Client",
+                "description": "Restored Client Records Successfully",
+                "operationId": "restoreClient",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID To Restore Client for",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                           
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                       }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+
+
+        "/api/trashed-product-list": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Show Trashed Product List",
+                "description": "Show Trashed Product List",
+                "operationId": "trashedProductList",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                           
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Data Fetched Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        },
+
+
+        
+        "/api/restore-product/{id}": {
+            "post": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Restore Product",
+                "description": "Restored Product Records Successfully",
+                "operationId": "restoreProduct",
+                "security":[{
+                    "bearerAuth": []
+                }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID To Restore Product for",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "multipart/form-data": {
+                           
+                        },
+                        "application/json": {
+                            "schema": {}
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Restored Product Records Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "success": "Successfully restored the data."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Restored Product Records Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                        "success": "Successfully restored the data."
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "example": {
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        }

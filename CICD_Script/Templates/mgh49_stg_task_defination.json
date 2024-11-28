@@ -1,0 +1,59 @@
+{
+	"containerDefinitions": [{
+            "logConfiguration": {
+                "logDriver": "awsfirelens"
+            },
+            "portMappings": [
+                {
+                    "containerPort": 80,
+                    "hostPort": 80,
+                    "protocol": "tcp"
+                }
+            ],
+		"cpu": 0,
+		"memory": 3072,
+		"environment": [],
+		"mountPoints": [],
+		"image": "328538277464.dkr.ecr.us-east-1.amazonaws.com/~ecrRepo~:~img_tag~",
+		"essential": true,
+		"name": "~mghapp~"
+	},
+	        {
+            "name": "log-router",
+            "image": "public.ecr.aws/aws-observability/aws-for-fluent-bit:2.31.12.20230727",
+            "cpu": 30,
+            "memoryReservation": 50,
+            "portMappings": [],
+            "essential": true,
+            "command": [
+                "bash",
+                "-c",
+                "#!/bin/bash\necho -n 'AWS for Fluent Bit Container Image Version ' &&\n\ncat /AWS_FOR_FLUENT_BIT_VERSION &&\n\necho '[MULTILINE_PARSER]\n    name          multiline-nodejs-trace\n    type          regex\n    flush_timeout 1\n    rule          \"start_state\"   \"/Trace:.*/\"                     \"cont\"\n    rule          \"cont\"          \"/^\\s+at.*/\"                     \"cont\"\n\n[MULTILINE_PARSER]\n    name          multiline-nodejs-error\n    type          regex\n    flush_timeout 1\n    rule          \"start_state\"   \"/Error:.*/\"                     \"cont\"\n    rule          \"cont\"          \"/^\\s+at.*/\"                     \"cont\"\n' > /fluent-bit/etc/custom-parsers.conf &&\n\n{\n  echo '@INCLUDE /fluent-bit/etc/fluent-bit.conf' &&\n  echo &&\n  echo '[SERVICE]\n    Flush        5\n    Grace        30\n    Log_Level    info\n    parsers_file /fluent-bit/etc/custom-parsers.conf\n\n# multiline parsing (i.e. stack-traces)\n[FILTER]\n    name                  multiline\n    match                 *\n    buffer                on\n    flush_ms              500\n    multiline.key_content log\n    # comma separated parser names;\n    # can be built-in(https://docs.fluentbit.io/manual/administration/configuring-fluent-bit/multiline-parsing#built-in-multiline-parsers)\n    # or custom (custom-parsers.conf)\n    multiline.parser      multiline-nodejs-trace,  multiline-nodejs-error\n\n# Required tags\n[FILTER]\n    Name         modify\n    Match        *\n    Add          account agf\n    Add          environment stg\n    Add          platform medicalaccess\n    Add          application medicalaccess-ltiapp\n    Add          function api\n    Add          pii none\n\n# Drop filters\n[FILTER]\r\n    Name         grep\r\n    Match        *\r\n    Exclude      $log['\\''level'\\''] debug\r\n\n\n# Outputs\n\n# Valid source names\n# mh-ecs-v1.0 for ECS sidecar implementation\n# mh-eks-v1.0 for EKS\n[OUTPUT]\n    Name           datadog\n    Match          *\n    Host           http-intake.logs.datadoghq.com\n    TLS            on\n    compress       gzip\n    dd_message_key log\n    dd_source      mh-ecs-v1.0\n    apikey         ${DD_API_KEY}\n'\n} > /fluent-bit/etc/main-fluent-bit.conf &&\n\nexport ECS_TASK_ID=$(grep -Po -m 1 '^\\\\s+Record\\\\s+ecs_task_arn\\\\s+arn:aws:ecs:.*/\\\\K[^/]+(?=\\\\s*$)' /fluent-bit/etc/fluent-bit.conf) &&\n\nexec /fluent-bit/bin/fluent-bit -e /fluent-bit/firehose.so -e /fluent-bit/cloudwatch.so -e /fluent-bit/kinesis.so -c /fluent-bit/etc/main-fluent-bit.conf"
+            ],
+            "environment": [],
+            "mountPoints": [],
+            "volumesFrom": [],
+            "secrets": [
+                {
+                    "name": "DD_API_KEY",
+                    "valueFrom": "/global/infra/datadog/default/org"
+                }
+            ],
+            "user": "0",
+            "firelensConfiguration": {
+                "type": "fluentbit",
+                "options": {
+                    "enable-ecs-log-metadata": "true"
+                }
+            }
+        }
+	],
+	"networkMode": "awsvpc",
+	"family": "~taskfamily~",
+	"executionRoleArn": "arn:aws:iam::328538277464:role/agf-medicalaccess-ltiapp-stg-api-exec20240112061349797300000001",
+	"placementConstraints": [],
+    "requiresCompatibilities": [
+		"EC2"
+	],
+    "memory": "3072"
+}

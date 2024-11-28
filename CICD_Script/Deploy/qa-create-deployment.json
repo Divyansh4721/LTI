@@ -1,0 +1,11 @@
+{
+    "applicationName": "~APPNAME~",
+    "deploymentGroupName": "~DEPGROUPNAME~",
+    "deploymentConfigName": "CodeDeployDefault.ECSAllAtOnce",
+    "revision": {
+        "revisionType": "AppSpecContent",
+        "appSpecContent": {
+            "content": "{'version': 1,'Resources': [{'TargetService': {'Type': 'AWS::ECS::Service','Properties': {'TaskDefinition':'arn:aws:ecs:us-east-1:328538277464:task-definition/~TASK_DEFINATION~:~BUILD_NUMBER~','LoadBalancerInfo': {'ContainerName': 'medicalaccess-ltiapp','ContainerPort': 80}}}}]}"
+        }
+    }
+}

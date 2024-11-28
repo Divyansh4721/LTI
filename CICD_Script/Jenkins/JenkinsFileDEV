@@ -1,0 +1,102 @@
+	properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10']]]);
+	pipeline{
+		agent any
+		stages{
+			stage('.env Configuration'){
+				steps{
+					script{
+					dir("$WORKSPACE/CICD_Script/Deploy/")
+					{
+					sh """
+					chmod +x dev-secrets.sh
+                    ./dev-secrets.sh $WORKSPACE
+					"""
+					}  
+					}  
+				}
+			}
+			stage('Sonar and Nginx Configuration'){
+				steps{
+					script{
+						sh '''
+						sed -i "s|~SONAR_LOGIN~|${SONAR_LOGIN}|g" sonar-scanner.properties
+						sed -i "s|~BUILD_NUMBER~|Build ${env:BUILD_DISPLAY_NAME}|g" sonar-scanner.properties
+												
+						'''
+					}  
+				}
+			}
+			/*stage('s3 upload '){
+				steps{
+					script{
+						sh '''
+						   aws s3 cp --recursive --exclude "*.php" public s3://mgh49-dev-s3/ --metadata-directive REPLACE --cache-control "public, max-age=31536000"
+						   
+						   
+						   echo '########## INVALIDATING CLOUDFRONT CACHE ###########'
+						   CLOUDFRONT_ID=$(aws ssm get-parameter --region $aws_region --query Parameter.Value --output text --name "/MGH49/Dev/main_ui_cloudfront_id")
+						   aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"
+						   
+						   '''
+					}  
+				}
+			}*/
+		    stage('DockerBuild and Sonar Analysis '){
+				steps{
+					script{
+						sh "docker image prune -f "
+						sh "DOCKER_BUILDKIT=1 docker build -t ${BUILD_NUMBER}t -f Dockerfile.dev ."
+					}  
+				}
+			}
+			stage ('SONAR QUALITY GATE CHECK'){
+				when {
+                    expression { params.SONAR_QUBE_EXECUTION == true }
+                    }
+			steps{
+				dir ("$WORKSPACE"){
+					withSonarQubeEnv('LMSonarNew') {
+						sh '''
+							SONAR_QG_URL="${SONAR_HOST_URL}api/qualitygates/project_status?projectKey=${SONAR_PROJECT_KEY}"
+							echo "getting quality gate result from --> $SONAR_QG_URL"
+							SONAR_QG_RESULT=$(curl -s -u "${SONAR_LOGIN}:" $SONAR_QG_URL)
+							QG_STATUS=$(echo $SONAR_QG_RESULT | jq -r .projectStatus.status)
+							echo "----- Sonar Quality Gate Status is: $QG_STATUS -----"
+							if [ $QG_STATUS != 'OK' ]
+								then 
+								echo "----- ABORTING BUILD DUE TO SONAR QUALITY GATE FAILURE -----"
+								exit 1
+							fi
+						'''
+					}
+				}
+			}
+		}
+			stage('Upload to ECR'){
+				steps{
+					script{
+						sh """
+						aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 134251096186.dkr.ecr.us-east-1.amazonaws.com
+						DOCKER_BUILDKIT=1 docker build -t ${BUILD_NUMBER} -f Dockerfile.dev .
+						docker tag ${BUILD_NUMBER} 134251096186.dkr.ecr.us-east-1.amazonaws.com/${ecrRepo}:${BUILD_NUMBER}
+						docker push 134251096186.dkr.ecr.us-east-1.amazonaws.com/${ecrRepo}:${BUILD_NUMBER}
+						"""
+
+					}
+				}
+			}
+			stage('Deploy on ECS '){
+				steps{
+					script{
+					dir("$WORKSPACE/CICD_Script/Deploy/")
+					{
+					sh """
+					chmod +x dev-ecs-deploy.sh
+                    ./dev-ecs-deploy.sh $WORKSPACE ${aws_region} ${taskFamily} ${clusterName} ${serviceName} ${BUILD_NUMBER} ${ecrRepo} ${mghAppName} ${cdAppName} ${cdGroupName}
+					"""
+					}  
+					}
+				}
+			}
+		}
+}

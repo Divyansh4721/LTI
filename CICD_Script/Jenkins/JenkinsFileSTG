@@ -1,0 +1,108 @@
+	properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10']]]);
+	pipeline{
+		agent any
+		environment
+		{
+			ECRCRED='ecr:region:awscredentails'
+		}
+		stages{
+			stage('.env Configuration'){
+				steps{
+					script{
+					dir("$WORKSPACE/CICD_Script/Deploy/")
+					{
+					sh """
+					set +x
+                    unset AWS_ACCESS_KEY_ID
+                    unset AWS_SECRET_ACCESS_KEY
+                    unset AWS_SESSION_TOKEN
+                    aws_credentials_json=$(aws sts assume-role --role-arn arn:aws:iam::328538277464:role/AGF-MEDICALACCESS-LTIAPP-NONPROD-LM-BUILD-SERVER-ROLE --role-session-name stgSession --region us-east-1)
+                    export AWS_ACCESS_KEY_ID=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.AccessKeyId)
+                    export AWS_SECRET_ACCESS_KEY=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.SecretAccessKey)
+                    export AWS_SESSION_TOKEN=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.SessionToken)
+                    set -x
+					chmod +x stg-secrets.sh
+                    ./stg-secrets.sh $WORKSPACE ${aws_region} ${AWS_SECRET_ID_env}
+					"""
+					}  
+					}  
+				}
+			}
+			/*stage('s3 upload '){
+				steps{
+					script{
+						sh '''
+					set +x
+                    unset AWS_ACCESS_KEY_ID
+                    unset AWS_SECRET_ACCESS_KEY
+                    unset AWS_SESSION_TOKEN
+                    aws_credentials_json=$(aws sts assume-role --role-arn arn:aws:iam::328538277464:role/AGF-MEDICALACCESS-LTIAPP-NONPROD-LM-BUILD-SERVER-ROLE --role-session-name stgSession --region us-east-1)
+                    export AWS_ACCESS_KEY_ID=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.AccessKeyId)
+                    export AWS_SECRET_ACCESS_KEY=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.SecretAccessKey)
+                    export AWS_SESSION_TOKEN=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.SessionToken)
+                    set -x
+						   aws s3 cp --recursive --exclude "*.php" public s3://agf-medicalaccess-ltiapp-stg-s3/ --metadata-directive REPLACE --cache-control "public, max-age=31536000"
+						   
+						   
+						   echo '########## INVALIDATING CLOUDFRONT CACHE ###########'
+						   CLOUDFRONT_ID=$(aws ssm get-parameter --region $aws_region --query Parameter.Value --output text --name "/AGF/medicalaccess-ltiapp/stg/cdn_param")
+						   aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"
+						   
+						   '''
+					}  
+				}
+			}*/
+		    stage('DockerBuild and Sonar Analysis '){
+				steps{
+					script{
+						sh "docker image prune -f "
+						sh "DOCKER_BUILDKIT=1 docker build -t ${BUILD_NUMBER}t -f Dockerfile ."
+					}  
+				}
+			}
+			stage('Upload to ECR'){
+				steps{
+					script{
+						sh """
+					    set +x
+                        unset AWS_ACCESS_KEY_ID
+                        unset AWS_SECRET_ACCESS_KEY
+                        unset AWS_SESSION_TOKEN
+                        aws_credentials_json=$(aws sts assume-role --role-arn arn:aws:iam::328538277464:role/AGF-MEDICALACCESS-LTIAPP-NONPROD-LM-BUILD-SERVER-ROLE --role-session-name stgSession --region us-east-1)
+                        export AWS_ACCESS_KEY_ID=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.AccessKeyId)
+                        export AWS_SECRET_ACCESS_KEY=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.SecretAccessKey)
+                        export AWS_SESSION_TOKEN=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.SessionToken)
+                        set -x
+						aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 328538277464.dkr.ecr.us-east-1.amazonaws.com
+						DOCKER_BUILDKIT=1 docker build -t ${BUILD_NUMBER} -f Dockerfile .
+						docker tag ${BUILD_NUMBER} 328538277464.dkr.ecr.us-east-1.amazonaws.com/${ecrRepo}:${BUILD_NUMBER}
+						docker push 328538277464.dkr.ecr.us-east-1.amazonaws.com/${ecrRepo}:${BUILD_NUMBER}
+						"""
+
+					}
+				}
+			}
+			stage('Deploy on ECS '){
+				steps{
+					script{
+					dir("$WORKSPACE/CICD_Script/Deploy/")
+					{
+					sh """
+					set +x
+                    unset AWS_ACCESS_KEY_ID
+                    unset AWS_SECRET_ACCESS_KEY
+                    unset AWS_SESSION_TOKEN
+                    aws_credentials_json=$(aws sts assume-role --role-arn arn:aws:iam::328538277464:role/AGF-MEDICALACCESS-LTIAPP-NONPROD-LM-BUILD-SERVER-ROLE --role-session-name stgSession --region us-east-1)
+                    export AWS_ACCESS_KEY_ID=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.AccessKeyId)
+                    export AWS_SECRET_ACCESS_KEY=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.SecretAccessKey)
+                    export AWS_SESSION_TOKEN=$(echo "$aws_credentials_json" | jq --exit-status --raw-output .Credentials.SessionToken)
+                    set -x
+					chmod +x stg-ecs-deploy.sh
+                    ./stg-ecs-deploy.sh $WORKSPACE ${aws_region} ${taskFamily} ${clusterName} ${serviceName} ${BUILD_NUMBER} ${ecrRepo} ${mghAppName} ${cdAppName} ${cdGroupName}
+					"""
+					}  
+					}
+				}
+			}
+		}
+}

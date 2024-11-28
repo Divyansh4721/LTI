@@ -1,0 +1,72 @@
+	properties([[$class: 'BuildDiscarderProperty', strategy: [$class: 'LogRotator', artifactDaysToKeepStr: '', artifactNumToKeepStr: '', daysToKeepStr: '', numToKeepStr: '10']]]);
+	pipeline{
+		agent any
+		environment
+		{
+			ECRCRED='ecr:region:awscredentails'
+		}
+		stages{
+			stage('.env Configuration'){
+				steps{
+					script{
+					dir("$WORKSPACE/CICD_Script/Deploy/")
+					{
+					sh """
+					chmod +x qa-secrets.sh
+                    ./qa-secrets.sh $WORKSPACE ${aws_region} ${AWS_SECRET_ID_env}
+					"""
+					}  
+					}  
+				}
+			}
+			/*stage('s3 upload '){
+				steps{
+					script{
+						sh '''
+						   aws s3 cp --recursive --exclude "*.php" public s3://mgh49-qa-s3/ --metadata-directive REPLACE --cache-control "public, max-age=31536000"
+						   
+						   
+						   echo '########## INVALIDATING CLOUDFRONT CACHE ###########'
+						   CLOUDFRONT_ID=$(aws ssm get-parameter --region $aws_region --query Parameter.Value --output text --name "/MGH49/QA/main_ui_cloudfront_id")
+						   aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_ID --paths "/*"
+						   
+						   '''
+					}  
+				}
+			}*/
+		    stage('DockerBuild and Sonar Analysis '){
+				steps{
+					script{
+						sh "docker image prune -f "
+						sh "DOCKER_BUILDKIT=1 docker build -t ${BUILD_NUMBER}t -f Dockerfile.qa ."
+					}  
+				}
+			}
+			stage('Upload to ECR'){
+				steps{
+					script{
+						sh """
+						aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 134251096186.dkr.ecr.us-east-1.amazonaws.com
+						DOCKER_BUILDKIT=1 docker build -t ${BUILD_NUMBER} -f Dockerfile.qa .
+						docker tag ${BUILD_NUMBER} 134251096186.dkr.ecr.us-east-1.amazonaws.com/${ecrRepo}:${BUILD_NUMBER}
+						docker push 134251096186.dkr.ecr.us-east-1.amazonaws.com/${ecrRepo}:${BUILD_NUMBER}
+						"""
+
+					}
+				}
+			}
+			stage('Deploy on ECS '){
+				steps{
+					script{
+					dir("$WORKSPACE/CICD_Script/Deploy/")
+					{
+					sh """
+					chmod +x qa-ecs-deploy.sh
+                    ./qa-ecs-deploy.sh $WORKSPACE ${aws_region} ${taskFamily} ${clusterName} ${serviceName} ${BUILD_NUMBER} ${ecrRepo} ${mghAppName} ${cdAppName} ${cdGroupName}
+					"""
+					}  
+					}
+				}
+			}
+		}
+}
